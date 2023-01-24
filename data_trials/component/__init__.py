@@ -1,0 +1,1 @@
+from data_trials.component.training.data_ingestion import DataIngestion
