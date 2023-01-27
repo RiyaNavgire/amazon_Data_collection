@@ -15,7 +15,7 @@ secret_access_key = os.getenv(AWS_SECRET_ACCESS_KEY_ENV_KEY, )
 #
 
 
-spark_session = SparkSession.builder.master('local[*]').appName('amazon_reviews') \
+spark_session = SparkSession.builder.master('local[*]').appName('calgary_news') \
     .config("spark.executor.instances", "1") \
     .config("spark.executor.memory", "6g") \
     .config("spark.driver.memory", "6g") \

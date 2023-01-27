@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from typing import List
 
 # Declaring variables for setup functions
-PROJECT_NAME = "amazon_reviews"
+PROJECT_NAME = "Calgary News"
 VERSION = "0.0.1"
 AUTHOR = "Riya Navgire and Vijay Kumar H"
 DESRCIPTION = "This is a sample for industry ready solution using NLP concepts"

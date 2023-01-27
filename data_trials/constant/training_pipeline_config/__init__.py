@@ -1,7 +1,7 @@
 import os
 
-PIPELINE_NAME = "amazon_reviews"
-PIPELINE_ARTIFACT_DIR = os.path.join(os.getcwd(), "aws_review_artifact")
+PIPELINE_NAME = "calgary_news"
+PIPELINE_ARTIFACT_DIR = os.path.join(os.getcwd(), "calgary_news_artifact")
 
 from data_trials.constant.training_pipeline_config.data_ingestion import *
 from data_trials.constant.training_pipeline_config.data_validation import *

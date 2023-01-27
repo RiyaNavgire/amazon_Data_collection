@@ -75,7 +75,7 @@ class DataIngestion:
         """
         try:
             logger.info("Started downloading files")
-            #for index in range(1, len(required_interval)):
+            
             logger.debug("Generating data download url")
             datasource_url: str = self.data_ingestion_config.datasource_url
             logger.debug(f"Url: {datasource_url}")
@@ -87,6 +87,8 @@ class DataIngestion:
             file_path = os.path.join(self.data_ingestion_config.download_dir, file_name)
             download_url = DownloadUrl(url=url, file_path=file_path, n_retry=self.n_retry)
             self.download_data(download_url=download_url)
+            
+                      
             logger.debug(f"Url: {url}")
             response = requests.get(url)
             print(response.text)
@@ -169,24 +171,28 @@ class DataIngestion:
 
             # downloading data
            # data = requests.get(download_url.url, params={'User-agent': f'your bot {uuid.uuid4()}'})
-            data = requests.get(download_url.url)
+            response = requests.get(download_url.url)
             try:
                 logger.info(f"Started writing downloaded data into json file: {download_url.file_path}")
                 # saving downloaded data into hard disk
                 with open(download_url.file_path, "w") as file_obj:
-                    news_data = list(map(lambda x: x["_source"],
-                                                      filter(lambda x: "_source" in x.keys(),
-                                                             json.loads(data.content)))
-                                                  )
+                    file_obj.write(response.text) 
+                    file_obj.close()
+                    
+                    #Use below code when you have data as csv format or something like that.
+                    #news_data = list(map(lambda x: x["_source"],
+                     #                                 filter(lambda x: "_source" in x.keys(),
+                      #                                       json.loads(data.content)))                                                 )
 
-                    json.dump(news_data, file_obj)
+
+                    #json.dump(news_data, file_obj)
                 logger.info(f"Downloaded data has been written into file: {download_url.file_path}")
             except Exception as e:
                 logger.info("Failed to download hence retry again.")
                 # removing file failed file exist
                 if os.path.exists(download_url.file_path):
                     os.remove(download_url.file_path)
-                self.retry_download_data(data, download_url=download_url)
+                self.retry_download_data(response, download_url=download_url)
 
         except Exception as e:
             logger.info(e)
