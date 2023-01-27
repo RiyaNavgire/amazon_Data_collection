@@ -3,6 +3,7 @@ import re
 import sys
 import time
 import uuid
+import pdb
 from collections import namedtuple
 from typing import List
 
@@ -18,6 +19,7 @@ from data_trials.entity.metadata_entity import DataIngestionMetadata
 from data_trials.exception import DataTrialException
 from data_trials.logger import logger
 from datetime import datetime
+#from data_trials.constant import TIMESTAMP
 
 DownloadUrl = namedtuple("DownloadUrl", ["url", "file_path", "n_retry"])
 
@@ -77,20 +79,18 @@ class DataIngestion:
             logger.debug("Generating data download url")
             datasource_url: str = self.data_ingestion_config.datasource_url
             logger.debug(f"Url: {datasource_url}")
-            file_name = "test.json"
-            
-            #file_path = os.path.join(self.data_ingestion_config.download_dir, file_name)
-            #download_url = DownloadUrl(url=datasource_url, file_path=file_path, n_retry=self.n_retry)
-            #self.download_data(download_url=download_url)
+            #timestamp=TIMESTAMP
+            #file_name = f"timestamp:{timestamp}"+".json"
+            file_name = "news.json"
+            #print(file_name)
             url = datasource_url
             file_path = os.path.join(self.data_ingestion_config.download_dir, file_name)
             download_url = DownloadUrl(url=url, file_path=file_path, n_retry=self.n_retry)
             self.download_data(download_url=download_url)
-            
+            logger.debug(f"Url: {url}")
             response = requests.get(url)
-            #print(response.text)
-            
-            
+            print(response.text)
+                        
             logger.info(f"File download completed")
         except Exception as e:
             raise DataTrialException(e, sys)
@@ -105,8 +105,7 @@ class DataIngestion:
         returns output_file_path
         """
         try:
-            #json_data_dir = self.data_ingestion_config.download_dir
-            json_data_dir = self.data_ingestion_config.failed_dir #point it to failed download_dir
+            json_data_dir = self.data_ingestion_config.download_dir          
             data_dir = self.data_ingestion_config.feature_store_dir
             output_file_name = self.data_ingestion_config.file_name
             os.makedirs(data_dir, exist_ok=True)
@@ -162,8 +161,9 @@ class DataIngestion:
     def download_data(self, download_url: DownloadUrl):
         try:
             logger.info(f"Starting download operation: {download_url}")
+            print(download_url.file_path)
             download_dir = os.path.dirname(download_url.file_path)
-
+            print(download_dir)
             # creating download directory
             os.makedirs(download_dir, exist_ok=True)
 
@@ -174,12 +174,12 @@ class DataIngestion:
                 logger.info(f"Started writing downloaded data into json file: {download_url.file_path}")
                 # saving downloaded data into hard disk
                 with open(download_url.file_path, "w") as file_obj:
-                    finance_complaint_data = list(map(lambda x: x["_source"],
+                    news_data = list(map(lambda x: x["_source"],
                                                       filter(lambda x: "_source" in x.keys(),
                                                              json.loads(data.content)))
                                                   )
 
-                    json.dump(finance_complaint_data, file_obj)
+                    json.dump(news_data, file_obj)
                 logger.info(f"Downloaded data has been written into file: {download_url.file_path}")
             except Exception as e:
                 logger.info("Failed to download hence retry again.")
@@ -217,13 +217,11 @@ class DataIngestion:
                 file_path = self.convert_files_to_parquet()
                 self.write_metadata(file_path=file_path)
 
-            feature_store_file_path = os.path.join(self.data_ingestion_config.feature_store_dir,
-                                                   self.data_ingestion_config.file_name)
+            feature_store_file_path = os.path.join(self.data_ingestion_config.feature_store_dir, self.data_ingestion_config.file_name)
             artifact = DataIngestionArtifact(
                 feature_store_file_path=feature_store_file_path,
                 download_dir=self.data_ingestion_config.download_dir,
                 metadata_file_path=self.data_ingestion_config.metadata_file_path,
-
             )
 
             logger.info(f"Data ingestion artifact: {artifact}")
