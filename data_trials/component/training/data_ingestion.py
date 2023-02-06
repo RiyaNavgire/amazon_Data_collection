@@ -12,6 +12,7 @@ import pandas as pd
 import requests
 
 from data_trials.config.pipeline.training import DataConfig
+from data_trials.constant.environment.variable_key import NEWS_API_KEY
 from data_trials.config.spark_manager import spark_session
 from data_trials.entity.artifact_entity import DataIngestionArtifact
 from data_trials.entity.config_entity import DataIngestionConfig
